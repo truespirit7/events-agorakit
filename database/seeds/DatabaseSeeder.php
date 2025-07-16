@@ -63,8 +63,8 @@ class DatabaseSeeder extends Seeder
 
             // add avatar to every user
 
-            Storage::disk('local')->makeDirectory('users/' . $user->id);
-                Image::read(file_get_contents('https://picsum.photos/500/400'))->save(storage_path() . '/app/users/' . $user->id . '/cover.jpg')->cover(128, 128)->save(storage_path() . '/app/users/' . $user->id . '/thumbnail.jpg');
+            // Storage::disk('local')->makeDirectory('users/' . $user->id);
+            //     Image::read(file_get_contents('https://picsum.photos/500/400'))->save(storage_path() . '/app/users/' . $user->id . '/cover.jpg')->cover(128, 128)->save(storage_path() . '/app/users/' . $user->id . '/thumbnail.jpg');
         }
 
         // create 10 groups
@@ -72,20 +72,34 @@ class DatabaseSeeder extends Seeder
             $group = App\Group::create([
                 'name' => $faker->city . '\'s user group',
                 'body' => $faker->text,
+                'user_id' => $admin->id,
+                'location' => $faker->city,
+                'latitude' => $faker->latitude,
+                'longitude' => $faker->longitude,
+                'settings' => json_encode([
+                    'show_members' => true,
+                    'show_discussions' => true,
+                    'show_actions' => true,
+                    'show_files' => true,
+                    'show_comments' => true,
+                    'show_participants' => true,
+                    'show_cover' => true,
+                ]),
             ]);
 
             $group->group_type = rand(0, 2);
+
             $group->save();
 
             $group->tag($this->tags());
 
             // add cover image to groups
-            Storage::disk('local')->makeDirectory('groups/' . $group->id);
-            Image::read(file_get_contents('https://picsum.photos/800/600'))->save(storage_path() . '/app/groups/' . $group->id . '/cover.jpg')->cover(300, 200)->save(storage_path() . '/app/groups/' . $group->id . '/thumbnail.jpg');
+            // Storage::disk('local')->makeDirectory('groups/' . $group->id);
+            // Image::read(file_get_contents('https://picsum.photos/800/600'))->save(storage_path() . '/app/groups/' . $group->id . '/cover.jpg')->cover(300, 200)->save(storage_path() . '/app/groups/' . $group->id . '/thumbnail.jpg');
 
             // add members to the group
             for ($j = 1; $j <= $faker->numberBetween(5, 20); $j++) {
-                $membership = \App\Membership::firstOrNew(['user_id' => App\User::orderByRaw('RAND()')->first()->id, 'group_id' => $group->id]);
+                $membership = \App\Membership::firstOrNew(['user_id' => App\User::orderByRaw('RANDOM()')->first()->id, 'group_id' => $group->id, 'config' => json_encode([])]);
                 $membership->membership = \App\Membership::MEMBER;
                 $membership->notification_interval = 600;
 
@@ -101,8 +115,8 @@ class DatabaseSeeder extends Seeder
                     'body' => $faker->text,
                 ]);
                 // attach one random author & group to each discussion
-                $discussion->user_id = App\User::orderByRaw('RAND()')->first()->id;
-                $discussion->group_id = App\Group::orderByRaw('RAND()')->first()->id;
+                $discussion->user_id = App\User::orderByRaw('RANDOM()')->first()->id;
+                $discussion->group_id = App\Group::orderByRaw('RANDOM()')->first()->id;
                 $discussion->save();
 
                 $discussion->tag($this->tags());
@@ -112,7 +126,7 @@ class DatabaseSeeder extends Seeder
                 for ($l = 1; $l <= $faker->numberBetween(5, 20); $l++) {
                     $comment = new \App\Comment();
                     $comment->body = $faker->text;
-                    $comment->user_id = App\User::orderByRaw('RAND()')->first()->id;
+                    $comment->user_id = App\User::orderByRaw('RANDOM()')->first()->id;
                     $discussion->comments()->save($comment);
                 }
             }
@@ -128,8 +142,8 @@ class DatabaseSeeder extends Seeder
                     'location' => $faker->city,
                 ]);
                 // attach one random author & group to each action
-                $action->user_id = App\User::orderByRaw('RAND()')->first()->id;
-                $action->group_id = App\Group::orderByRaw('RAND()')->first()->id;
+                $action->user_id = App\User::orderByRaw('RANDOM()')->first()->id;
+                $action->group_id = App\Group::orderByRaw('RANDOM()')->first()->id;
                 if ($action->isInvalid()) {
                     dd($action->getErrors());
                 }
@@ -144,7 +158,7 @@ class DatabaseSeeder extends Seeder
                 for ($pp = 1; $pp <= $faker->numberBetween(1, 20); $pp++) {
                     // add participants to each action
                     $rsvp = Participation::firstOrCreate([
-                        'user_id' => App\User::orderByRaw('RAND()')->first()->id,
+                        'user_id' => App\User::orderByRaw('RANDOM()')->first()->id,
                         'action_id' => $action->id
                     ]);
 
@@ -170,8 +184,8 @@ class DatabaseSeeder extends Seeder
                     'item_type' => 2
                 ]);
                 // attach one random author & group to each action
-                $file->user_id = App\User::orderByRaw('RAND()')->first()->id;
-                $file->group_id = App\Group::orderByRaw('RAND()')->first()->id;
+                $file->user_id = App\User::orderByRaw('RANDOM()')->first()->id;
+                $file->group_id = App\Group::orderByRaw('RANDOM()')->first()->id;
                 if ($file->isInvalid()) {
                     dd($file->getErrors());
                 }

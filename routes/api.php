@@ -10,3 +10,10 @@
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+use Illuminate\Support\Facades\Route;
+
+use App\Http\Controllers\Api\OrganizationController;
+
+// Route::post('/api/organizations', 'Api\OrganizationController@store');
+Route::post('/api/organizations', );

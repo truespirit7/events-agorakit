@@ -228,9 +228,11 @@ class GroupController extends Controller
                 ->withErrors($group->getErrors())
                 ->withInput();
         }
-        $group->save();
 
         $group->user()->associate(Auth::user());
+
+        $group->save();
+
 
         if ($request->get('tags')) {
             $group->tag($request->get('tags'));
