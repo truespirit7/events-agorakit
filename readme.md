@@ -7,6 +7,15 @@ Agorakit contains a forum, calendar, file manager and email notifier to help you
 
 
 ## Quick Start
+
+SAIL ALIAS
+
+alias sail='sh $([ -f sail ] && echo sail || echo vendor/bin/sail)'
+
+FOR DEBUG:
+sail build --no-cache
+
+
 Check the [website](https://www.agorakit.org) or [docs](https://docs.agorakit.org) for a more colorful overview, then read our [mission](https://docs.agorakit.org/#mission-statement) and [beliefs](https://docs.agorakit.org/#beliefs).
 
 Or jump to:
