@@ -231,6 +231,15 @@ class GroupController extends Controller
 
         $group->user()->associate(Auth::user());
 
+
+        $group->setSetting('show_members', true);
+        $group->setSetting('show_discussions', true);
+        $group->setSetting('show_actions', true);
+        $group->setSetting('show_files', true);
+        $group->setSetting('show_comments', true);
+        $group->setSetting('show_participants', true);
+        $group->setSetting('show_cover', true);
+
         $group->save();
 
 
@@ -258,6 +267,7 @@ class GroupController extends Controller
         $membership = \App\Membership::firstOrNew(['user_id' => Auth::user()->id, 'group_id' => $group->id]);
         $membership->notification_interval = 60 * 24; // default to daily interval
         $membership->membership = \App\Membership::ADMIN;
+        $membership->config = json_encode([]);
         $membership->save();
 
         // notify admins (if they want it)
