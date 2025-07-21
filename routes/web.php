@@ -1,7 +1,7 @@
 <?php
 
 use Spatie\Honeypot\ProtectAgainstSpam;
-
+use App\Http\Controllers\Auth\VKIDController;
 /*
 |--------------------------------------------------------------------------
 | Routes File
@@ -59,13 +59,10 @@ I will apply here the recomandation "routes as documentation" from https://phils
 
 // TODO: VK OAuth 
 // routes/web.php
-Route::get('/auth/vk', function() {
-    // return Socialite::driver('vkontakte')
-    //     ->scopes(['friends', 'groups', 'audio', 'offline']) // Запрашиваем доступ к данным
-    //     ->redirect();
-});
 
-Route::get('/auth/vk/callback', [VkAuthController::class, 'handleCallback']);
+Route::get('/auth/vk/callback', [\App\Http\Controllers\Auth\VKIDController::class, 'callback']);
+Route::post('/auth/vk/handle', [\App\Http\Controllers\Auth\VKIDController::class, 'handleVKUserInfo']);
+
 
 Route::group(['middleware' => ['web']], function () {
     /*

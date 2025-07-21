@@ -13,8 +13,87 @@
 
         @csrf
         @honeypot
-
         <div class="form-group mb-3">
+
+
+            <div>
+  <script src="https://unpkg.com/@vkid/sdk@<3.0.0/dist-sdk/umd/index.js"></script>
+  <script type="text/javascript">
+    if ('VKIDSDK' in window) {
+      const VKID = window.VKIDSDK;
+
+      VKID.Config.init({
+        app: 53937590,
+        redirectUrl: 'http://localhost/auth/vk/callback',
+        responseMode: VKID.ConfigResponseMode.Callback,
+        source: VKID.ConfigSource.LOWCODE,
+        scope: 'email phone', // Заполните нужными доступами по необходимости
+      });
+
+      const oneTap = new VKID.OneTap();
+
+      oneTap.render({
+        container: document.currentScript.parentElement,
+        showAlternativeLogin: true
+      })
+      .on(VKID.WidgetEvents.ERROR, vkidOnError)
+      .on(VKID.OneTapInternalEvents.LOGIN_SUCCESS, function (payload) {
+        const code = payload.code;
+        const deviceId = payload.device_id;
+
+        VKID.Auth.exchangeCode(code, deviceId)
+          .then(vkidOnSuccess)
+          .catch(vkidOnError);
+      });
+    
+      function vkidOnSuccess(data) {
+        const accessToken = data.access_token;
+        const userInfo = VKID.Auth.userInfo(accessToken)
+          .then(function (userInfo) {
+            console.log("USER INFO:");
+            console.log(userInfo);
+
+
+
+                    fetch("/auth/vk/handle", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          },
+          body: JSON.stringify({ user: userInfo })
+        })
+          .then(response => response.json())
+          .then(data => {
+            console.log("Response from server:", data);
+            // redirect
+            window.location.href = '/';
+          })
+          .catch(error => {
+            console.error("Ошибка при отправке данных на сервер:", error);
+          });
+          })
+          .catch(function (error) {
+            console.error("Ошибка получения информации о пользователе:", error);
+          });
+          
+      }
+    
+      function vkidOnError(error) {
+        // Обработка ошибки
+      }
+
+      document.getElementById('lol').addEventListener('click', function() {
+
+      });
+    }
+  </script>
+</div>
+
+
+
+
+
             <label class="form-label">{{ __('Username or Email') }}</label>
             <input class="form-control" name="login" required="required" type="text"
                 value="{{ old('username') ?: old('email') }}">
