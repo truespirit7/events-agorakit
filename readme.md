@@ -16,6 +16,14 @@ FOR DEBUG:
 sail build --no-cache
 
 
+Expo start:
+
+cd frontend
+(first) npm install
+npx expo start --web
+android
+ ANDROID_HOME=~/dev/soft/Android/Sdk npx expo start
+
 Check the [website](https://www.agorakit.org) or [docs](https://docs.agorakit.org) for a more colorful overview, then read our [mission](https://docs.agorakit.org/#mission-statement) and [beliefs](https://docs.agorakit.org/#beliefs).
 
 Or jump to:

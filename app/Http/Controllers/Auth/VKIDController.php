@@ -25,7 +25,7 @@ class VKIDController extends Controller
             $user = User::where('email', $userInfo['email'])->first();
             if ($user) {
                 Auth::login($user);
-                return "exists";
+                return json_encode(["status" => "exists"]);
             }else {
                 // Create a new user if not exists
                 $user = User::create([
@@ -34,7 +34,7 @@ class VKIDController extends Controller
                     'password' => bcrypt(Str::random(16)), // Random password
                 ]);
                 Auth::login($user);
-                return "created";
+                return json_encode(["status" => "created"]);
             }
         }
     }
