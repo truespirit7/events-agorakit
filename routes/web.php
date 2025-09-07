@@ -57,7 +57,7 @@ I will apply here the recomandation "routes as documentation" from https://phils
 */
 
 
-// TODO: VK OAuth 
+// TODO: VK OAuth           
 // routes/web.php
 
 Route::get('/auth/vk/callback', [\App\Http\Controllers\Auth\VKIDController::class, 'callback']);
