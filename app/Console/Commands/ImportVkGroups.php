@@ -38,14 +38,14 @@ class ImportVkGroups extends Command
     public function getVKGroupData()
     {
         // table - vk_groups
-        $data = \DB::table('vk_groups')->whereNotNull('community_id')->get();
+        $data = \DB::connection('vk_parser')->table('vk_groups')->whereNotNull('community_id')->get();
 
         return $data;
     }
     function createGroup($data)
     {
         $group = new Group;
-        $group->id = $data->id;
+        // $group->id = $data->id;
         $group->name = $data->name; // TODO: Брать название из ВК
         $group->vk_link = $data->vk_link;
         $group->community_id = $data->community_id;

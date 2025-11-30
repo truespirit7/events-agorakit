@@ -97,6 +97,19 @@ return [
             'sslmode'  => 'prefer',
         ],
 
+        'vk_parser' => [
+            'driver'   => 'pgsql',
+            'host'     => 'host.docker.internal',
+            'port'     => '5000',
+            'database' => 'vk_parser',
+            'username' => 'parser',
+            'password' => 'dbpassword',
+            'charset'  => 'utf8',
+            'prefix'   => '',
+            'schema'   => 'public',
+            'sslmode'  => 'prefer',
+        ],
+
     ],
 
     /*
