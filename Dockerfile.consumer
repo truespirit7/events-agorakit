@@ -1,0 +1,37 @@
+FROM php:8.4-cli
+
+# Установка системных зависимостей
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    libzip-dev \
+    zip \
+    unzip \
+    postgresql-client \
+    libpq-dev \
+    && docker-php-ext-install pdo_pgsql mbstring exif pcntl bcmath gd zip
+
+# Установка Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Установка рабочей директории
+WORKDIR /var/www/html
+
+# Копирование файлов проекта
+COPY . .
+
+# Установка зависимостей PHP
+RUN composer install --no-dev --optimize-autoloader
+
+# Настройка прав
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html/storage
+
+# Установка php-amqplib для RabbitMQ
+RUN composer require php-amqplib/php-amqplib
+
+# Команда запуска consumer
+CMD ["php", "artisan", "rabbitmq:consume"]

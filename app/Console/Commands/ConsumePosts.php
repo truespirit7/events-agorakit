@@ -6,6 +6,7 @@ use App\Action;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 use Illuminate\Console\Command;
 
@@ -74,6 +75,12 @@ class ConsumePosts extends Command
                         'cover' => '',
                     ]);
                     $action->save();
+                    
+                    // Если есть фото, скачиваем первое и устанавливаем как cover
+                    if (!empty($data['photos']) && is_array($data['photos'])) {
+                        $this->downloadAndSetCover($action, $data['photos'][0]);
+                    }
+                    
                     $this->info("Added new event: " . $data['post_id']);
                 } catch (\Exception $e) {
                     $this->error('Error saving action: ' . $e->getMessage());
@@ -102,5 +109,38 @@ class ConsumePosts extends Command
 
         $channel->close();
         $connection->close();
+    }
+
+    /**
+     * Скачивает фото по URL и устанавливает как cover для action
+     */
+    private function downloadAndSetCover(Action $action, string $photoUrl)
+    {
+        try {
+            $this->info("Downloading cover from: " . $photoUrl);
+            
+            // Скачиваем фото
+            $imageContent = file_get_contents($photoUrl);
+            if ($imageContent === false) {
+                $this->error("Failed to download image from: " . $photoUrl);
+                return;
+            }
+
+            // Создаем директорию
+            $coverPath = $action->getCoverPath();
+            Storage::makeDirectory($coverPath);
+            
+            // Сохраняем оригинальное фото
+            $coverFilePath = $coverPath . 'cover.jpg';
+            Storage::put($coverFilePath, $imageContent);
+            
+            // Генерируем thumbnails
+            $action->generateThumbnails();
+            
+            $this->info("Cover set successfully for action: " . $action->id);
+            
+        } catch (\Exception $e) {
+            $this->error("Error setting cover for action " . $action->id . ": " . $e->getMessage());
+        }
     }
 }
